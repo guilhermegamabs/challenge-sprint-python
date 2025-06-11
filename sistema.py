@@ -3,6 +3,7 @@ from automovel import Automovel
 from residencial import Residencial
 from vida import Vida
 from sinistro import Sinistro
+from utils import Utils
 
 class SistemaSeguros:
     def __init__(self):
@@ -131,13 +132,20 @@ class SistemaSeguros:
         print("\n--- Cadastro de Cliente ---")
         nome = input("Nome: ")
         cpf = input("CPF: ")
-        if not self.validar_cpf(cpf):
-            print("CPF inválido. Deve conter 11 dígitos.")
+        if not Utils.validar_cpf(cpf):
+            print("CPF Inválido. Deve conter 11 dígitos (Sem traços e pontos)")
             return
-        data_nascimento = input("Data de nascimento (dd/mm/aaaa): ")
+        data_nascimento_input = input("Data de nascimento (dd/mm/aaaa): ")
+        data_nascimento = Utils.formatar_data(data_nascimento_input)
+        if not data_nascimento:
+            print("Data de nascimento inválida!")
+            return
         endereco = input("Endereço: ")
-        telefone = input("Telefone: ")
+        telefone = input("Telefone (Sem parênteses ou traços): ")
         email = input("Email: ")
+        if not Utils.validar_email(email):
+            print("Email inválido!")
+            return
         cliente = Cliente(nome, cpf, data_nascimento, endereco, telefone, email)
         self.clientes[cpf] = cliente
         print("\nCliente cadastrado com sucesso!")
@@ -199,7 +207,7 @@ class SistemaSeguros:
     def listar_clientes(self):
         print("\n--- Lista de Clientes ---")
         for cliente in self.clientes.values():
-            print(f"Nome: {cliente.nome} | CPF: {cliente.cpf}")
+            print(f"Nome: {cliente.nome} | CPF: {cliente.cpf} | Telefone: {cliente.telefone} | E-mail: {cliente.email}")
 
     def listar_apolices_ativas(self):
         print("\n--- Apólices Ativas ---")
@@ -324,8 +332,11 @@ class SistemaSeguros:
         if not cliente:
             print("Cliente não encontrado.")
             return
-        telefone = input(f"Novo telefone [{cliente.telefone}]: ") or cliente.telefone
+        telefone = input(f"Novo telefone [{cliente.telefone}] (Sem parênteses ou traços): ") or cliente.telefone
         email = input(f"Novo email [{cliente.email}]: ") or cliente.email
+        if not Utils.validar_email(email):
+            print("Email inválido.")
+            return
         cliente.telefone = telefone
         cliente.email = email
         print("Dados de contato atualizados com sucesso.")
@@ -345,12 +356,3 @@ class SistemaSeguros:
 
     def somente_admin(self):
         print("Acesso permitido apenas para usuários administradores.")
-
-    def validar_cpf(self, cpf):
-        return cpf.isdigit() and len(cpf) == 11
-
-
-if __name__ == "__main__":
-    sistema = SistemaSeguros()
-    if sistema.autenticar():
-        sistema.menu()
