@@ -8,7 +8,7 @@ class SistemaSeguros:
     def __init__(self):
         self.clientes = {}
         self.seguros = []
-        self.sinistros = [] 
+        self.sinistros = []
         self.tipo_usuario = None
         self.usuarios = {
             "fiapadmin": ("fiapadmin2025", "admin"),
@@ -22,7 +22,6 @@ class SistemaSeguros:
         print("=== LOGIN ===")
         usuario = input("Usuário: ")
         senha = input("Senha: ")
-
         if usuario in self.usuarios and self.usuarios[usuario][0] == senha:
             self.tipo_usuario = self.usuarios[usuario][1]
             print(f"Bem-vindo, {usuario} ({self.tipo_usuario})!")
@@ -30,7 +29,7 @@ class SistemaSeguros:
         else:
             print("Usuário ou senha inválidos.")
             return False
-    
+
     def menu(self):
         while True:
             print("\n===== SISTEMA DE SEGUROS =====")
@@ -39,7 +38,7 @@ class SistemaSeguros:
             print("3. Registrar Sinistro")
             print("4. Listar clientes")
             print("5. Listar seguros")
-            print("6. Calcular Total de Prêmios Mensais")  
+            print("6. Calcular Total de Prêmios Mensais")
             print("7. Listar sinistros de um cliente")
             print("8. Listar Apólices Ativas")
             print("9. Editar Cliente")
@@ -48,31 +47,34 @@ class SistemaSeguros:
             print("12. Mudar Status Sinistro")
             print("13. Valor Total Segurado por Cliente")
             print("14. Apólices Emitidas por Tipo de Seguro")
-            print("15. ")
+            print("15. Quantidade de sinistros abertos/fechados")
+            print("16. Ranking de clientes com mais apólices")
+            print("17. Cancelar apólice")
+            print("18. Atualizar status de sinistro")
             print("0. Sair")
             opcao = input("Escolha uma opção: ")
 
             if opcao == "1":
                 if self.tipo_usuario != "admin":
                     self.somente_admin()
-                else: 
+                else:
                     self.cadastrar_cliente()
             elif opcao == "2":
                 if self.tipo_usuario != "admin":
                     self.somente_admin()
-                else: 
+                else:
                     self.cadastrar_seguro()
             elif opcao == "3":
                 if self.tipo_usuario != "admin":
                     self.somente_admin()
-                else: 
+                else:
                     self.registrar_sinistro()
             elif opcao == "4":
                 self.listar_clientes()
             elif opcao == "5":
                 self.listar_seguros()
             elif opcao == "6":
-                self.calcular_total_premios_mensais()  
+                self.calcular_total_premios_mensais()
             elif opcao == "7":
                 self.listar_sinistros_cliente()
             elif opcao == "8":
@@ -81,7 +83,7 @@ class SistemaSeguros:
                 if self.tipo_usuario != "admin":
                     self.somente_admin()
                 else:
-                    self.editar_cliente()
+                    self.alterar_contato_cliente()
             elif opcao == "10":
                 if self.tipo_usuario != "admin":
                     self.somente_admin()
@@ -96,12 +98,26 @@ class SistemaSeguros:
                 if self.tipo_usuario != "admin":
                     self.somente_admin()
                 else:
-                    self.mudar_status_sinistro()       
+                    self.mudar_status_sinistro()
             elif opcao == "13":
                 cpf = input("Digite o CPF do cliente: ")
                 self.calcular_valor_total_segurado_cliente(cpf)
             elif opcao == "14":
-                self.listar_apolices_por_tipo()
+                self.apolices_por_tipo()
+            elif opcao == "15":
+                self.quantidade_sinistros_abertos_fechados()
+            elif opcao == "16":
+                self.ranking_clientes_mais_apolices()
+            elif opcao == "17":
+                if self.tipo_usuario != "admin":
+                    self.somente_admin()
+                else:
+                    self.cancelar_apolice()
+            elif opcao == "18":
+                if self.tipo_usuario != "admin":
+                    self.somente_admin()
+                else:
+                    self.mudar_status_sinistro()
             elif opcao == "0":
                 print("\nEncerrando o sistema.")
                 break
@@ -110,7 +126,7 @@ class SistemaSeguros:
 
     def buscar_cliente(self, cpf):
         return self.clientes.get(cpf)
-    
+
     def cadastrar_cliente(self):
         print("\n--- Cadastro de Cliente ---")
         nome = input("Nome: ")
@@ -125,7 +141,7 @@ class SistemaSeguros:
         cliente = Cliente(nome, cpf, data_nascimento, endereco, telefone, email)
         self.clientes[cpf] = cliente
         print("\nCliente cadastrado com sucesso!")
-        
+
     def cadastrar_seguro(self):
         print("\n--- Cadastro de Seguro ---")
         cpf = input("CPF do cliente: ")
@@ -145,7 +161,7 @@ class SistemaSeguros:
             ano = int(input("Ano do carro: "))
             placa = input("Placa do carro: ")
             cor = input("Cor do carro: ")
-            valor_segurado = float(input("Valor segurado do carro: "))  # novo input
+            valor_segurado = float(input("Valor segurado: "))
             seguro = Automovel(cliente, modelo, ano, placa, cor, valor_segurado)
         elif tipo == "2":
             valor_segurado = float(input("Valor segurado: "))
@@ -165,17 +181,15 @@ class SistemaSeguros:
         print(f"Seguro cadastrado com sucesso! Valor mensal: R$ {seguro.valor_mensal}")
         print(f"Número da Apólice: {seguro.numero_apolice}")
 
-        
+
     def registrar_sinistro(self):
         print("\n--- Registrar Sinistro ---")
         cpf = input("CPF do cliente: ")
         numero_apolice = input("Número da apólice: ")
-
         apolice_valida = any(s.cliente.cpf == cpf and s.numero_apolice == numero_apolice for s in self.seguros)
         if not apolice_valida:
             print("Apólice ou CPF não encontrados.")
             return
-
         descricao = input("Descrição do sinistro: ")
         data_ocorrencia = input("Data do ocorrido (dd/mm/aaaa): ")
         sinistro = Sinistro(cpf, numero_apolice, descricao, data_ocorrencia)
@@ -207,77 +221,45 @@ class SistemaSeguros:
     def listar_sinistros_cliente(self):
         cpf = input("Digite o CPF do cliente: ")
         encontrados = [s for s in self.sinistros if s.cpf == cpf]
-        
         if not encontrados:
             print("Nenhum sinistro encontrado para este CPF.")
             return
-        
         print(f"\n--- Sinistros do cliente {cpf} ---")
         for sinistro in encontrados:
             print(f"Apólice: {sinistro.numero_apolice} | Descrição: {sinistro.descricao} | Data: {sinistro.data_ocorrencia} | Status: {sinistro.status}")
 
-    def editar_cliente(self):
-        cpf = input("Digite o CPF do cliente que deseja editar: ")
-        cliente = self.clientes.get(cpf)
-        if not cliente:
-            print("Cliente não encontrado.")
-            return
-
-        print(f"Editando cliente {cliente.nome} (CPF: {cliente.cpf})")
-        nome = input(f"Novo nome [{cliente.nome}]: ") or None
-        data_nascimento = input(f"Nova data de nascimento [{cliente.data_nascimento}]: ") or None
-        endereco = input(f"Novo endereço [{cliente.endereco}]: ") or None
-        telefone = input(f"Novo telefone [{cliente.telefone}]: ") or None
-        email = input(f"Novo email [{cliente.email}]: ") or None
-
-        if nome:
-            cliente.nome = nome
-        if data_nascimento:
-            cliente.data_nascimento = data_nascimento
-        if endereco:
-            cliente.endereco = endereco
-        if telefone:
-            cliente.telefone = telefone
-        if email:
-            cliente.email = email
-
-        print("Cliente atualizado com sucesso.")
-
     def editar_seguro(self):
-        numero_apolice = input("Digite o número da apólice que deseja editar: ")
+        numero_apolice = input("Digite o número da apólice: ")
         seguro = next((s for s in self.seguros if s.numero_apolice == numero_apolice), None)
         if not seguro:
             print("Apólice não encontrada.")
             return
-
-        print(f"Editando apólice {numero_apolice} - Tipo: {seguro.tipo}")
-
         if seguro.tipo == "Automóvel":
-            modelo = input(f"Novo modelo [{seguro.modelo_carro}]: ") or None
-            ano = input(f"Novo ano [{seguro.ano_carro}]: ") or None
-            placa = input(f"Nova placa [{seguro.placa_carro}]: ") or None
-            cor = input(f"Nova cor [{seguro.cor_carro}]: ") or None
-            valor_segurado = input(f"Novo valor segurado [{seguro.valor_segurado}]: ") or None
-            ano = int(ano) if ano else None
-            valor_segurado = float(valor_segurado) if valor_segurado else None
-            seguro.editar(modelo, ano, placa, cor, valor_segurado)
+            modelo = input(f"Modelo [{seguro.modelo}]: ") or seguro.modelo
+            ano = input(f"Ano [{seguro.ano}]: ")
+            ano = int(ano) if ano else seguro.ano
+            placa = input(f"Placa [{seguro.placa}]: ") or seguro.placa
+            cor = input(f"Cor [{seguro.cor}]: ") or seguro.cor
+            seguro.modelo = modelo
+            seguro.ano = ano
+            seguro.placa = placa
+            seguro.cor = cor
         elif seguro.tipo == "Vida":
-            valor_segurado = input(f"Novo valor segurado [{seguro.valor_segurado}]: ") or None
-            beneficiarios = input(f"Novos beneficiários (separados por vírgula) [{', '.join(seguro.beneficiarios)}]: ") or None
-            valor_segurado = float(valor_segurado) if valor_segurado else None
-            beneficiarios = [b.strip() for b in beneficiarios.split(",")] if beneficiarios else None
-            seguro.editar(valor_segurado, beneficiarios)
+            valor_segurado = input(f"Valor segurado [{seguro.valor_segurado}]: ")
+            valor_segurado = float(valor_segurado) if valor_segurado else seguro.valor_segurado
+            beneficiarios = input(f"Beneficiários (separados por vírgula) [{', '.join(seguro.beneficiarios)}]: ")
+            beneficiarios = [b.strip() for b in beneficiarios.split(",")] if beneficiarios else seguro.beneficiarios
+            seguro.valor_segurado = valor_segurado
+            seguro.beneficiarios = beneficiarios
         elif seguro.tipo == "Residencial":
-            endereco = input(f"Novo endereço [{seguro.endereco}]: ") or None
-            cep = input(f"Novo CEP [{seguro.cep}]: ") or None
-            valor = input(f"Novo valor do imóvel [{seguro.valor}]: ") or None
-            valor = float(valor) if valor else None
-            seguro.editar(endereco, cep, valor)
-        else:
-            print("Tipo de seguro inválido.")
-
+            endereco = input(f"Endereço [{seguro.endereco}]: ") or seguro.endereco
+            cep = input(f"CEP [{seguro.cep}]: ") or seguro.cep
+            valor = input(f"Valor do imóvel [{seguro.valor}]: ")
+            valor = float(valor) if valor else seguro.valor
+            seguro.endereco = endereco
+            seguro.cep = cep
+            seguro.valor = valor
         print("Seguro atualizado com sucesso.")
-
 
     def editar_registro(self):
         print("Funcionalidade ainda não implementada.")
@@ -288,42 +270,84 @@ class SistemaSeguros:
         if not sinistro:
             print("Sinistro não encontrado.")
             return
-        novo_status = input(f"Novo status (Atual: {sinistro.status}): ")
-        sinistro.status = novo_status
-        print("Status do sinistro atualizado.")
+        print(f"Status atual: {sinistro.status}")
+        novo_status = input("Novo status: ")
+        confirmacao = input(f"Confirmar alteração do status para '{novo_status}'? (s/n): ").lower()
+        if confirmacao == 's':
+            sinistro.status = novo_status
+            print("Status do sinistro atualizado.")
+        else:
+            print("Alteração de status cancelada.")
 
     def calcular_valor_total_segurado_cliente(self, cpf):
+        seguros_cliente = [s for s in self.seguros if s.cliente.cpf == cpf]
+        total = 0
+        for seguro in seguros_cliente:
+            if seguro.tipo == "Vida":
+                total += seguro.valor_segurado
+            elif seguro.tipo == "Residencial":
+                total += seguro.valor
+            elif seguro.tipo == "Automóvel":
+                total += seguro.valor_mensal * 12
+        print(f"Valor total segurado do cliente {cpf}: R$ {total:.2f}")
+
+    def apolices_por_tipo(self):
+        tipos = {"Automóvel": 0, "Vida": 0, "Residencial": 0}
+        for seguro in self.seguros:
+            if seguro.tipo in tipos:
+                tipos[seguro.tipo] += 1
+        print("\nApólices emitidas por tipo de seguro:")
+        for tipo, quantidade in tipos.items():
+            print(f"{tipo}: {quantidade}")
+
+    def quantidade_sinistros_abertos_fechados(self):
+        abertos = sum(1 for s in self.sinistros if s.status.lower() == "aberto")
+        fechados = sum(1 for s in self.sinistros if s.status.lower() == "fechado")
+        print(f"\nSinistros abertos: {abertos}")
+        print(f"Sinistros fechados: {fechados}")
+
+    def ranking_clientes_mais_apolices(self):
+        contador = {}
+        for seguro in self.seguros:
+            cpf = seguro.cliente.cpf
+            contador[cpf] = contador.get(cpf, 0) + 1
+        ranking = sorted(contador.items(), key=lambda x: x[1], reverse=True)
+        print("\nRanking de clientes com mais apólices:")
+        for cpf, quantidade in ranking:
+            cliente = self.clientes.get(cpf)
+            nome = cliente.nome if cliente else "Desconhecido"
+            print(f"{nome} (CPF: {cpf}) - {quantidade} apólices")
+
+    def alterar_contato_cliente(self):
+        cpf = input("Digite o CPF do cliente: ")
         cliente = self.clientes.get(cpf)
         if not cliente:
             print("Cliente não encontrado.")
             return
-        
-        total = 0.0
-        for seguro in self.seguros:
-            if seguro.cliente.cpf == cpf:
-                total += seguro.obter_valor_segurado()
+        telefone = input(f"Novo telefone [{cliente.telefone}]: ") or cliente.telefone
+        email = input(f"Novo email [{cliente.email}]: ") or cliente.email
+        cliente.telefone = telefone
+        cliente.email = email
+        print("Dados de contato atualizados com sucesso.")
 
-        print(f"Valor total segurado do cliente {cliente.nome}: R$ {total:.2f}")
+    def cancelar_apolice(self):
+        numero_apolice = input("Digite o número da apólice que deseja cancelar: ")
+        seguro = next((s for s in self.seguros if s.numero_apolice == numero_apolice), None)
+        if not seguro:
+            print("Apólice não encontrada.")
+            return
+        confirmacao = input(f"Tem certeza que deseja cancelar a apólice {numero_apolice}? (s/n): ").lower()
+        if confirmacao == 's':
+            self.seguros.remove(seguro)
+            print("Apólice cancelada com sucesso.")
+        else:
+            print("Cancelamento abortado.")
+
+    def somente_admin(self):
+        print("Acesso permitido apenas para usuários administradores.")
 
     def validar_cpf(self, cpf):
         return cpf.isdigit() and len(cpf) == 11
-
-    def somente_admin(self):
-        print("\nAcesso negado. Apenas usuários admin podem acessar esta função.")
-        
-    def listar_apolices_por_tipo(self):
-        if not self.seguros:
-            print("Nenhuma apólice cadastrada.")
-            return
-
-        contagem = {}
-        for seguro in self.seguros:
-            tipo = seguro.tipo
-            contagem[tipo] = contagem.get(tipo, 0) + 1
-
-        print("\n--- Apólices Emitidas por Tipo de Seguro ---")
-        for tipo, quantidade in contagem.items():
-            print(f"{tipo}: {quantidade} apólices")
 
 
 if __name__ == "__main__":
