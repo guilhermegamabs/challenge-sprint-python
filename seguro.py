@@ -5,7 +5,9 @@ class Seguro:
     def __init__(self, cliente, tipo):
         self.cliente = cliente
         self.tipo = tipo
-        self.numero_apolice = self.gerar_numero_apolice()
+        self.data_inicio = datetime.now().strftime("%d/%m/%Y")
+        self.ativo = True  
+
 
     def gerar_numero_apolice(self):
         import random

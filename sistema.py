@@ -224,26 +224,47 @@ class SistemaSeguros:
 
     def cadastrar_cliente(self):
         print("\n--- Cadastro de Cliente ---")
-        nome = input("Nome: ")
-        cpf = input("CPF: ")
+        nome = input("Nome: ").strip()
+        cpf = input("CPF (somente números): ").strip()
+        data_nascimento_input = input("Data de nascimento (dd/mm/aaaa): ").strip()
+        endereco = input("Endereço: ").strip()
+        email = input("Email: ").strip()
+        telefone = input("Telefone: ").strip()
+
+        if not Utils.validar_campos_obrigatorios(
+            nome=nome, cpf=cpf, data_nascimento=data_nascimento_input, endereco=endereco, email=email
+        ):
+            print("Erro: Preencha todos os campos obrigatórios.")
+            return
+
         if not Utils.validar_cpf(cpf):
-            print("CPF Inválido. Deve conter 11 dígitos (Sem traços e pontos)")
+            print("Erro: CPF inválido. Deve conter 11 dígitos e passar na validação.")
             return
-        data_nascimento_input = input("Data de nascimento (dd/mm/aaaa): ")
-        try:
-            data_nascimento = Utils.converter_data(data_nascimento_input)
-        except ValueError:
-            print("Data inválida.")
+
+        if not Utils.validar_data_nascimento(data_nascimento_input):
+            print("Erro: Data de nascimento inválida ou cliente menor de 18 anos.")
             return
+
+        if not Utils.validar_email(email):
+            print("Erro: Email inválido.")
+            return
+
         if cpf in self.clientes:
-            print("Cliente já cadastrado.")
+            print("Erro: Cliente já cadastrado.")
             return
-        endereco = input("Endereço: ")
-        email = input("Email: ")
-        telefone = input("Telefone: ")
+        
+        for cliente in self.clientes.values():
+            if cliente.email.lower() == email.lower():
+                print("Erro: Este email já está cadastrado para outro cliente.")
+                return
+
+        data_nascimento = Utils.converter_data(data_nascimento_input)
+
         cliente = Cliente(nome, cpf, data_nascimento.strftime("%d/%m/%Y"), endereco, email, telefone)
         self.clientes[cpf] = cliente
+
         print("Cliente cadastrado com sucesso!")
+
 
     def cadastrar_seguro(self):
         print("\n--- Cadastro de Seguro ---")
@@ -257,7 +278,7 @@ class SistemaSeguros:
 
         if tipo == "1":
             modelo = input("Modelo do carro: ")
-            ano = input("Ano do carro: ")
+            ano = int(input("Ano do carro: "))
             placa = input("Placa: ")
             cor = input("Cor: ")
             valor_segurado = float(input("Valor segurado: "))

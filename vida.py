@@ -6,7 +6,12 @@ class Vida(Seguro):
         self.valor_segurado = valor_segurado
         self.beneficiarios = beneficiarios
         self.valor_mensal = self.calcula_valor_mensal()
-
+        
+    def __str__(self):
+        return (f"[Vida] Cliente: {self.cliente.nome}, Valor Segurado: R${self.valor_segurado:.2f}, "
+                f"Mensal: R${self.valor_mensal:.2f}, Beneficiários: {', '.join(self.beneficiarios)}, "
+                f"Status: {'Ativo' if self.ativo else 'Cancelado'}")
+        
     def calcula_valor_mensal(self):
         return self.valor_segurado * 0.02
 

@@ -7,6 +7,11 @@ class Residencial(Seguro):
         self.cep = cep
         self.valor = float(valor)
         self.valor_mensal = self.calcula_valor_mensal()
+    
+    def __str__(self):
+        return (f"[Residencial] Cliente: {self.cliente.nome}, Endereço: {self.endereco_imovel}, "
+                f"Valor Segurado: R${self.valor_segurado:.2f}, Mensal: R${self.valor_mensal:.2f}, "
+                f"Status: {'Ativo' if self.ativo else 'Cancelado'}")    
 
     def calcula_valor_mensal(self):
         return round(self.valor * 0.0005, 2)
