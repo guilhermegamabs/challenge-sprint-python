@@ -6,14 +6,14 @@ class Residencial(Seguro):
         self.endereco = endereco
         self.cep = cep
         self.valor = float(valor)
-        self.valor_mensal = self.calcula_valor_mensal()
+        self.valor_mensal = self.calcular_valor_mensal()
     
     def __str__(self):
-        return (f"[Residencial] Cliente: {self.cliente.nome}, Endereço: {self.endereco_imovel}, "
-                f"Valor Segurado: R${self.valor_segurado:.2f}, Mensal: R${self.valor_mensal:.2f}, "
+        return (f"[Residencial] Cliente: {self.cliente.nome}, Endereço: {self.endereco}, "
+                f"Valor Segurado: R${self.valor:.2f}, Mensal: R${self.valor_mensal:.2f}, "
                 f"Status: {'Ativo' if self.ativo else 'Cancelado'}")    
 
-    def calcula_valor_mensal(self):
+    def calcular_valor_mensal(self):
         return round(self.valor * 0.0005, 2)
 
     def editar(self, endereco=None, cep=None, valor=None):
@@ -22,8 +22,8 @@ class Residencial(Seguro):
         if cep:
             self.cep = cep
         if valor:
-            self.valor = valor
-        self.valor_mensal = self.calcula_valor_mensal()
+            self.valor = float(valor)
+        self.valor_mensal = self.calcular_valor_mensal()
 
     def obter_valor_segurado(self):
         return self.valor

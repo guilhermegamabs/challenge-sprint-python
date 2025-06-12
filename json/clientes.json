@@ -14,5 +14,21 @@
         "endereco": "Rua Francisco",
         "telefone": "vi@gmail.com",
         "email": "11959723885"
+    },
+    "67470364099": {
+        "nome": "Jair",
+        "cpf": "67470364099",
+        "data_nascimento": "07/04/1998",
+        "endereco": "Rua Gl\u00f3ria 111",
+        "telefone": "jair@gmail.com",
+        "email": "11959723882"
+    },
+    "42635597030": {
+        "nome": "Carolina",
+        "cpf": "42635597030",
+        "data_nascimento": "10/10/1990",
+        "endereco": "Rua 2",
+        "telefone": "carolina@gmail.com",
+        "email": "11959723889"
     }
 }

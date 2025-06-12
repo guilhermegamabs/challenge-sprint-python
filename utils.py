@@ -4,6 +4,7 @@ from datetime import datetime, date
 class Utils:
     @staticmethod
     def validar_cpf(cpf):
+        cpf = cpf.strip()
         cpf = ''.join(filter(str.isdigit, cpf))
         if len(cpf) != 11:
             return False
@@ -14,22 +15,25 @@ class Utils:
         for i in range(9):
             soma += int(cpf[i]) * (10 - i)
         resto = soma % 11
-        if resto < 2:
-            digito1 = 0
-        else:
-            digito1 = 11 - resto
+        digito1 = 0 if resto < 2 else 11 - resto
 
         soma = 0
         for i in range(10):
             soma += int(cpf[i]) * (11 - i)
         resto = soma % 11
-        if resto < 2:
-            digito2 = 0
-        else:
-            digito2 = 11 - resto
+        digito2 = 0 if resto < 2 else 11 - resto
 
         return digito1 == int(cpf[9]) and digito2 == int(cpf[10])
 
+    @staticmethod
+    def ler_float(mensagem):
+        while True:
+            try:
+                valor = float(input(mensagem))
+                return valor
+            except ValueError:
+                print("Valor inválido. Por favor, digite um número decimal válido.")
+                
     @staticmethod
     def formatar_data(data_str):
         try:
@@ -53,7 +57,8 @@ class Utils:
         hoje = date.today()
         if data >= hoje:
             return False
-        idade = (hoje - data).days // 365
+        # cálculo de idade considerando meses e dias
+        idade = hoje.year - data.year - ((hoje.month, hoje.day) < (data.month, data.day))
         if idade < 18:
             return False
         return True
@@ -70,10 +75,13 @@ class Utils:
 
     @staticmethod
     def validar_campos_obrigatorios(**campos):
+        campos_invalidos = []
         for nome, valor in campos.items():
             if valor is None or (isinstance(valor, str) and valor.strip() == ""):
-                print(f"O campo '{nome}' é obrigatório e não pode estar vazio.")
-                return False
+                campos_invalidos.append(nome)
+        if campos_invalidos:
+            print(f"Os seguintes campos são obrigatórios e não podem estar vazios: {', '.join(campos_invalidos)}.")
+            return False
         return True
 
     @staticmethod

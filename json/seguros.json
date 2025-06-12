@@ -1,1 +1,52 @@
-[]
+[
+    {
+        "tipo": "Autom\u00f3vel",
+        "cliente_cpf": "44517543803",
+        "numero_apolice": "135161",
+        "modelo": "Honda Civic",
+        "ano": 2014,
+        "placa": "EFL2021",
+        "cor": "Chumbo",
+        "valor_segurado": 120000.0,
+        "valor_mensal": 6000.0
+    },
+    {
+        "tipo": "Residencial",
+        "cliente_cpf": "44517543803",
+        "numero_apolice": "954519",
+        "endereco": "Rua Bernardo Taveira Junior",
+        "cep": "04467145",
+        "valor": 500000.0,
+        "valor_mensal": 250.0
+    },
+    {
+        "tipo": "Vida",
+        "cliente_cpf": "44517543803",
+        "numero_apolice": "533785",
+        "valor_segurado": 50000.0,
+        "beneficiarios": [
+            "Vit\u00f3ria"
+        ],
+        "valor_mensal": 1000.0
+    },
+    {
+        "tipo": "Residencial",
+        "cliente_cpf": "44517543803",
+        "numero_apolice": "394517",
+        "endereco": "Rua Bernardo Taveira J\u00fanior",
+        "cep": "04467145",
+        "valor": 500000.0,
+        "valor_mensal": 250.0
+    },
+    {
+        "tipo": "Autom\u00f3vel",
+        "cliente_cpf": "42635597030",
+        "numero_apolice": "984365",
+        "modelo": "Tucson",
+        "ano": 2018,
+        "placa": "ELF2121",
+        "cor": "Prata",
+        "valor_segurado": 120000.0,
+        "valor_mensal": 6000.0
+    }
+]

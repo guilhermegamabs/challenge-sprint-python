@@ -2,6 +2,7 @@ from datetime import datetime
 
 class Sinistro:
     _sinistros = []
+
     def __init__(self, cpf, numero_apolice, descricao, data_ocorrencia):
         self.cpf = cpf
         self.numero_apolice = numero_apolice
