@@ -20,3 +20,7 @@ class Utils:
 
         pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
         return re.match(pattern, email) is not None
+    
+    @staticmethod
+    def converter_data(data_str):
+        return datetime.strptime(data_str, "%d/%m/%Y").date()

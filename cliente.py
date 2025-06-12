@@ -7,6 +7,9 @@ class Cliente:
         self.telefone = telefone;
         self.email = email;
         
+    def __str__(self):
+        return f"Nome: {self.nome} | CPF: {self.cpf} | Email: {self.email} | Telefone: {self.telefone}"
+    
     def editar(self, nome=None, data_nasc=None, endereco=None, telefone=None, email=None):
         if nome:
             self.nome = nome
