@@ -14,4 +14,4 @@ Para criar um cliente, você vai precisar de um CPF válido, use o geradorcpf.co
 
 Em algumas funções do sistema, você vai precisar do número apólice, use esse como exemplo (705712) ou escolha um em json/seguros.json
 
-Qualquer problema para acessar os arquivos, acesse: 
+Qualquer problema para acessar os arquivos, acesse: https://github.com/guilhermegamabs/challenge-sprint-python
