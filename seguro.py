@@ -6,6 +6,7 @@ class Seguro:
         self.cliente = cliente
         self.tipo = tipo
         self.numero_apolice = self.gerar_numero_apolice()
+        self.ativo = True
 
     def gerar_numero_apolice(self):
         import random

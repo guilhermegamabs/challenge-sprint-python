@@ -144,7 +144,6 @@ class SistemaSeguros:
             print("15. Quantidade de sinistros abertos/fechados")
             print("16. Ranking de clientes com mais apólices")
             print("17. Cancelar apólice")
-            print("18. Atualizar status de sinistro")
             print("0. Sair")
             opcao = input("Escolha uma opção: ")
 
@@ -187,7 +186,7 @@ class SistemaSeguros:
                 if self.tipo_usuario != "admin":
                     self.somente_admin()
                 else:
-                    self.editar_registro()
+                    self.editar_sinistro()
             elif opcao == "12":
                 if self.tipo_usuario != "admin":
                     self.somente_admin()
@@ -207,11 +206,6 @@ class SistemaSeguros:
                     self.somente_admin()
                 else:
                     self.cancelar_apolice()
-            elif opcao == "18":
-                if self.tipo_usuario != "admin":
-                    self.somente_admin()
-                else:
-                    self.mudar_status_sinistro()
             elif opcao == "0":
                 self.salvar_dados()
                 print("\nEncerrando o sistema.")
@@ -228,8 +222,8 @@ class SistemaSeguros:
         cpf = input("CPF (somente números): ").strip()
         data_nascimento_input = input("Data de nascimento (dd/mm/aaaa): ").strip()
         endereco = input("Endereço: ").strip()
-        email = input("Email: ").strip()
         telefone = input("Telefone: ").strip()
+        email = input("Email: ").strip()
 
         if not Utils.validar_campos_obrigatorios(
             nome=nome, cpf=cpf, data_nascimento=data_nascimento_input, endereco=endereco, email=email
@@ -245,22 +239,19 @@ class SistemaSeguros:
             print("Erro: Data de nascimento inválida ou cliente menor de 18 anos.")
             return
 
-        if not Utils.validar_email(email):
-            print("Erro: Email inválido.")
-            return
-
         if cpf in self.clientes:
             print("Erro: Cliente já cadastrado.")
             return
         
-        for cliente in self.clientes.values():
-            if cliente.email.lower() == email.lower():
-                print("Erro: Este email já está cadastrado para outro cliente.")
+        novo_email = email.strip().lower()
+        for c in self.clientes.values():
+            if c.email.strip().lower() == novo_email and c.cpf != cpf:
+                print("Email já cadastrado para outro cliente.")
                 return
 
         data_nascimento = Utils.converter_data(data_nascimento_input)
 
-        cliente = Cliente(nome, cpf, data_nascimento.strftime("%d/%m/%Y"), endereco, email, telefone)
+        cliente = Cliente(nome, cpf, data_nascimento.strftime("%d/%m/%Y"), endereco, telefone, email)
         self.clientes[cpf] = cliente
         self.salvar_dados()
         print("Cliente cadastrado com sucesso!")
@@ -323,7 +314,7 @@ class SistemaSeguros:
         descricao = input("Descrição do sinistro: ").strip()
         data_ocorrencia = input("Data da ocorrência (dd/mm/aaaa): ").strip()
 
-        if not Utils.validar_data(data_ocorrencia):
+        if not Utils.converter_data(data_ocorrencia):
             print("Data inválida.")
             return
         
@@ -338,7 +329,7 @@ class SistemaSeguros:
             print("Nenhum cliente cadastrado.")
             return
         for cliente in self.clientes.values():
-            print(f"Nome: {cliente.nome}, CPF: {cliente.cpf}, Email: {cliente.email}")
+            print(f"Nome: {cliente.nome} | CPF: {cliente.cpf} | Email: {cliente.email} | Telefone: {cliente.telefone}")
 
     def listar_seguros(self):
         print("\n--- Lista de Seguros ---")
@@ -381,10 +372,6 @@ class SistemaSeguros:
         novo_telefone = input(f"Novo telefone (atual: {cliente.telefone}): ").strip()
         novo_email = input(f"Novo email (atual: {cliente.email}): ").strip()
 
-        if novo_email and not Utils.validar_email(novo_email):
-            print("Email inválido.")
-            return
-
         if novo_email:
             for c in self.clientes.values():
                 if c.email.lower() == novo_email.lower() and c.cpf != cpf:
@@ -418,7 +405,11 @@ class SistemaSeguros:
             if modelo:
                 seguro.modelo = modelo
             if ano:
-                seguro.ano = ano
+                try:
+                    seguro.ano = int(ano)
+                except ValueError:
+                    print("Ano Inválido")
+                    return
             if placa:
                 seguro.placa = placa
             if cor:
@@ -463,9 +454,30 @@ class SistemaSeguros:
         self.salvar_dados()
         print("Seguro atualizado com sucesso.")
 
-    def editar_registro(self):
-        print("\nFuncionalidade ainda não implementada.")
+    def editar_sinistro(self):
+        numero_sinistro = input("\nDigite o número do sinistro que deseja editar: ").strip()
+        try:
+            numero_sinistro = int(numero_sinistro)
+        except ValueError:
+            print("Número de sinistro inválido.")
+            return
 
+        sinistro = next((s for s in self.sinistros if s.numero == numero_sinistro), None)
+        if not sinistro:
+            print("Sinistro não encontrado.")
+            return
+
+        print(f"Editando sinistro número: {sinistro.numero}")
+        print(f"\nCPF ({sinistro.cpf})")
+        print(f"Apólice ({sinistro.numero_apolice})")
+        descricao = input(f"Descrição ({sinistro.descricao}): ").strip()
+        data_ocorrencia = input(f"Data do ocorrido ({sinistro.data_ocorrencia}): ").strip()
+
+        sinistro.editar(
+            descricao=descricao if descricao else None,
+            data_ocorrencia=data_ocorrencia if data_ocorrencia else None
+        )
+        print("Sinistro atualizado com sucesso.")
     def mudar_status_sinistro(self):
         numero_apolice = input("Número da apólice: ").strip()
         sinistros = [s for s in self.sinistros if s.numero_apolice == numero_apolice]

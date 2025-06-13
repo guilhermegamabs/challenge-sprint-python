@@ -1,15 +1,18 @@
 from datetime import datetime
 
 class Sinistro:
-    _sinistros = []
+    _contador = 1  
 
-    def __init__(self, cpf, numero_apolice, descricao, data_ocorrencia):
+    def __init__(self, cpf, numero_apolice, descricao, data_ocorrencia, status="Aberto", created_at=None):
+        self.numero = Sinistro._contador 
+        Sinistro._contador += 1
+
         self.cpf = cpf
         self.numero_apolice = numero_apolice
         self.descricao = descricao
         self.data_ocorrencia = data_ocorrencia
-        self.status = "Aberto"
-        self.created_at = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        self.status = status
+        self.created_at = created_at or datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
     def exibir_detalhes(self):
         print(f"Apólice: {self.numero_apolice}")
